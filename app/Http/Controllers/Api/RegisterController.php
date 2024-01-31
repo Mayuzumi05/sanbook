@@ -17,7 +17,7 @@ class RegisterController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
-                'email' => 'required',
+                'email' => 'required|email|unique:users,email',
             ]);
     
             //check if validation fails
