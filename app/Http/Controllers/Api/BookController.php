@@ -12,8 +12,37 @@ use Illuminate\Support\Facades\Validator;
 class BookController extends Controller
 {
     //
-    public function index() {
-        $books = Book::latest()->get();
+    public function index(Request $request) {
+        $book_query = Book::query();
+
+        if($request->title){
+            $book_query->where('title','LIKE','%'.$request->title.'%');
+        }
+
+        if($request->minYear){
+            $book_query->where('release_year','>=', $request->minYear);
+        }
+
+        if($request->maxYear){
+            $book_query->where('release_year','<=', $request->maxYear);
+        }
+
+        if($request->minPage){
+            $book_query->where('total_page','>=', $request->minPage);
+        }
+
+        if($request->maxPage){
+            $book_query->where('total_page','<=', $request->maxPage);
+        }
+
+        if($request->sortByTitle && in_array($request->sortByTitle, ['asc', 'desc'])) {
+            $sortByTitle=$request->sortByTitle;
+        }
+        else {
+            $sortByTitle='desc';
+        }
+
+        $books = $book_query->orderBy('title',$sortByTitle)->get();
 
         return new PostResource(true, 'List Data Book', $books);
     }
